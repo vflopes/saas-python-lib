@@ -24,7 +24,7 @@ def _get_aws_ssm_parameter(parameter_name: str, aws_session_token) -> Any:
 
 
 def get_aws_ssm_parameter_value(
-    parameter_name: str, aws_session_token: str = AwsSessionToken
+    parameter_name: str, *, aws_session_token: str = AwsSessionToken
 ) -> Optional[str]:
     parameter = _get_aws_ssm_parameter(
         parameter_name=parameter_name,
@@ -35,3 +35,12 @@ def get_aws_ssm_parameter_value(
         raise KeyError(f"Parameter {parameter_name} does not have a Value field")
 
     return parameter.get("Value")
+
+
+def get_required_aws_ssm_parameter_value(parameter_name: str) -> str:
+    value = get_aws_ssm_parameter_value(parameter_name=parameter_name)
+
+    if value is None:
+        raise ValueError(f"Required parameter {parameter_name} has no value")
+
+    return value
